@@ -40,9 +40,6 @@ public class TiendaServlet extends HttpServlet {
     String action = request.getServletPath();
     try {
       switch (action) {
-        case "/":
-          listStores(request, response);
-          break;
         case "/login":
           showLoginForm(request, response);
           break;
@@ -63,32 +60,30 @@ public class TiendaServlet extends HttpServlet {
     }
   }
 
-  private void showStoreServices(HttpServletRequest request, HttpServletResponse response) {
+  private void showStoreServices(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     int id = Integer.parseInt(request.getParameter("id"));
     Tienda store = tiendaDAO.find(id);
-    System.out.println(store.getNombre());
+    List<Servicio> services = servicioDAO.getServicesForStore(id);
+    request.setAttribute("store", store);
+    request.setAttribute("services", services);
+    RequestDispatcher rd = request.getRequestDispatcher("store.jsp");
+    rd.forward(request, response);
   }
 
   private void accessToPlatform(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String email = request.getParameter("email");
     String password = request.getParameter("password");
-    List<Tienda> tiendas = tiendaDAO.list();
-    List<Cliente> clientes = clienteDAO.list();
     Tienda t = tiendaDAO.findByField("email", email);
+    String page = "login";
     if (t != null && t.getClave().equals(password)) {
-      request.setAttribute("store", t);
-      RequestDispatcher rd = request.getRequestDispatcher("store.jsp");
-      rd.forward(request, response);
+      page = "store?id="+t.getId();
     }
 
     Cliente c = clienteDAO.findByField("email", email);
-    if (c.getClave().equals(password)) {
-      List<Tienda> stores = tiendaDAO.list();
-      request.setAttribute("stores", stores);
-      RequestDispatcher rd = request.getRequestDispatcher("store-list.jsp");
-      rd.forward(request, response);
+    if (c!=null && c.getClave().equals(password)) {
+      page = "cliente?id="+c.getId();
     }
-    response.sendRedirect("login");
+    response.sendRedirect(page);
   }
 
   private void showSignUpForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

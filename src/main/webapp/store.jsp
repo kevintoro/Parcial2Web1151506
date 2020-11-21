@@ -19,9 +19,49 @@
     <h2 class="text-center" style="color: #1e90ff">
       <c:out value="${store.getNombre()}"/>
     </h2>
-    <div class="row row-cols-1 row-cols-md-4 mt-5">
-      <c:forEach var="store" items="${services}">
-      </c:forEach>
+    <div class="row">
+      <a href="<%=request.getContextPath()%>/" class="btn btn-outline-primary mt-5 ml-4">
+        Inicio
+      </a>
+      <a href="<%=request.getContextPath()%>/addService?store=<c:out value="${store.getId()}"/>"
+         class="btn btn-outline-primary mt-5 ml-3">
+        Agregar Servicio
+      </a>
+    </div>
+    <div class="container">
+      <div class="row row-cols-1 row-cols-lg-4 row-cols-md-3 mt-2">
+        <c:if test="${services.size()>0}">
+          <c:forEach var="service" items="${services}">
+            <div class="col mb-2">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">
+                      ${service.getNombre()}
+                  </h5>
+                  <p class="card-text">
+                      ${service.getDescripcion()}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </c:forEach>
+        </c:if>
+        <c:if test="${services.size()==0}">
+          <div class="card mx-auto">
+            <div class="card-body">
+              <h5 class="card-title">
+                No hay servicios
+              </h5>
+              <p class="card-text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus autem corporis eaque enim et, harum
+                id
+                natus nostrum placeat quaerat repellat repudiandae. Debitis iusto provident sequi tempora tempore!
+                Repellendus, tempore.
+              </p>
+            </div>
+          </div>
+        </c:if>
+      </div>
     </div>
   </div>
 </div>

@@ -1,5 +1,7 @@
 package co.blacklabel.learn.util;
 
+import co.blacklabel.learn.model.Servicio;
+
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -94,5 +96,11 @@ public class ConnectionDB<T> {
       returnObject = queryResult.get(0);
     }
     return returnObject;
+  }
+
+  public List<Servicio> getServicesForStore(int store){
+    TypedQuery<T> query = (TypedQuery<T>) em.createQuery("select s from Servicio s where s.tienda = :store", Servicio.class);
+    query.setParameter("store", store);
+    return (List<Servicio>) query.getResultList();
   }
 }
