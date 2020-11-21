@@ -4,6 +4,8 @@ import co.blacklabel.learn.DAO.ClienteDAO;
 import co.blacklabel.learn.DAO.SeguirDAO;
 import co.blacklabel.learn.DAO.ServicioDAO;
 import co.blacklabel.learn.DAO.TiendaDAO;
+import co.blacklabel.learn.model.Cliente;
+import co.blacklabel.learn.model.Servicio;
 import co.blacklabel.learn.model.Tienda;
 
 import javax.servlet.RequestDispatcher;
@@ -21,21 +23,23 @@ public class TiendaServlet extends HttpServlet {
   private ClienteDAO clienteDAO;
   private SeguirDAO seguirDAO;
   private ServicioDAO servicioDAO;
-  public TiendaServlet(){
+
+  public TiendaServlet() {
     super();
     tiendaDAO = new TiendaDAO();
     clienteDAO = new ClienteDAO();
     seguirDAO = new SeguirDAO();
     servicioDAO = new ServicioDAO();
   }
+
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     doGet(request, response);
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     String action = request.getServletPath();
-    try{
-      switch (action){
+    try {
+      switch (action) {
         case "/":
           listStores(request, response);
           break;
@@ -48,17 +52,43 @@ public class TiendaServlet extends HttpServlet {
         case "/access":
           accessToPlatform(request, response);
           break;
-        default:listStores(request, response);
+        case "/store":
+          showStoreServices(request, response);
+          break;
+        default:
+          listStores(request, response);
       }
-    } catch (IOException e){
+    } catch (IOException e) {
       throw new ServletException(e);
     }
   }
 
-  private void accessToPlatform(HttpServletRequest request, HttpServletResponse response) {
+  private void showStoreServices(HttpServletRequest request, HttpServletResponse response) {
+    int id = Integer.parseInt(request.getParameter("id"));
+    Tienda store = tiendaDAO.find(id);
+    System.out.println(store.getNombre());
+  }
+
+  private void accessToPlatform(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String email = request.getParameter("email");
     String password = request.getParameter("password");
+    List<Tienda> tiendas = tiendaDAO.list();
+    List<Cliente> clientes = clienteDAO.list();
+    Tienda t = tiendaDAO.findByField("email", email);
+    if (t != null && t.getClave().equals(password)) {
+      request.setAttribute("store", t);
+      RequestDispatcher rd = request.getRequestDispatcher("store.jsp");
+      rd.forward(request, response);
+    }
 
+    Cliente c = clienteDAO.findByField("email", email);
+    if (c.getClave().equals(password)) {
+      List<Tienda> stores = tiendaDAO.list();
+      request.setAttribute("stores", stores);
+      RequestDispatcher rd = request.getRequestDispatcher("store-list.jsp");
+      rd.forward(request, response);
+    }
+    response.sendRedirect("login");
   }
 
   private void showSignUpForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
