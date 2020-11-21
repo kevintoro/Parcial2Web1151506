@@ -39,10 +39,36 @@ public class TiendaServlet extends HttpServlet {
         case "/":
           listStores(request, response);
           break;
+        case "/login":
+          showLoginForm(request, response);
+          break;
+        case "/signup":
+          showSignUpForm(request, response);
+          break;
+        case "/access":
+          accessToPlatform(request, response);
+          break;
+        default:listStores(request, response);
       }
     } catch (IOException e){
       throw new ServletException(e);
     }
+  }
+
+  private void accessToPlatform(HttpServletRequest request, HttpServletResponse response) {
+    String email = request.getParameter("email");
+    String password = request.getParameter("password");
+
+  }
+
+  private void showSignUpForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    RequestDispatcher rd = request.getRequestDispatcher("signup");
+    rd.forward(request, response);
+  }
+
+  private void showLoginForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    RequestDispatcher rd = request.getRequestDispatcher("signin.jsp");
+    rd.forward(request, response);
   }
 
   private void listStores(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
